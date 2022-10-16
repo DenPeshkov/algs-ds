@@ -1,6 +1,4 @@
-/*
-Package sort implements various sorting algortihms.
-*/
+// Package sort contains implementations of various sorting algorithms.
 package sort
 
 import (
