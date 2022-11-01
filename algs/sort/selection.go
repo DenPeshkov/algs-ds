@@ -7,18 +7,19 @@ func Selection[T any](arr []T, cmp utils.Comparator[T]) {
 	N := len(arr)
 
 	for i := 0; i < N; i++ {
-		minInd := minSlice(arr[i:], cmp)
+		minInd := minSlice(arr, i, cmp)
 
 		arr[i], arr[minInd] = arr[minInd], arr[i]
 	}
 }
 
-func minSlice[T any](arr []T, cmp utils.Comparator[T]) (minInd int) {
-	min := arr[0]
+func minSlice[T any](arr []T, from int, cmp utils.Comparator[T]) int {
+	minInd := from
+	min := arr[minInd]
 
-	for i, a := range arr[1:] {
-		if cmp(a, min) < 0 {
-			min = a
+	for i := from + 1; i < len(arr); i++ {
+		if cmp(arr[i], min) < 0 {
+			min = arr[i]
 			minInd = i
 		}
 	}
