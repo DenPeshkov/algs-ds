@@ -1,4 +1,3 @@
-/* Package permutation provides implementations of algorithms generating permutations of the input. */
 package permutation_test
 
 import (
@@ -9,7 +8,7 @@ import (
 func TestBacktracking(t *testing.T) {
 	tests := []struct {
 		name string
-		arr  []int
+		x    []int
 	}{
 		{"1 element", []int{1}},
 		{"2 elements", []int{1, 2}},
@@ -22,12 +21,12 @@ func TestBacktracking(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			perms := Backtracking(tt.arr)
+			perms := Backtracking(tt.x)
 
-			wantedPermsNum, gotPermsNum := fac(len(tt.arr)), len(perms)
+			wantedPermsNum, gotPermsNum := fac(len(tt.x)), len(perms)
 
 			if wantedPermsNum != gotPermsNum {
-				t.Errorf("Not all permutations created %v: wanted %v, got %v", tt.arr, wantedPermsNum, gotPermsNum)
+				t.Errorf("Not all permutations created %v: wanted %v, got %v", tt.x, wantedPermsNum, gotPermsNum)
 			}
 		})
 	}

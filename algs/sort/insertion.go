@@ -6,18 +6,18 @@ import (
 )
 
 // Insertion implements insertion sort.
-func Insertion[T any](arr []T, cmp utils.Comparator[T]) {
-	N := len(arr)
+func Insertion[T any](x []T, cmp utils.Comparator[T]) {
+	N := len(x)
 
 	for i := 1; i < N; i++ {
-		x := arr[i]
+		k := x[i]
 		j := i - 1
 
-		for j >= 0 && cmp(arr[j], x) > 0 {
-			arr[j+1] = arr[j]
+		for j >= 0 && cmp(x[j], k) > 0 {
+			x[j+1] = x[j]
 			j--
 		}
 
-		arr[j+1] = x
+		x[j+1] = k
 	}
 }

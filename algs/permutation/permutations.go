@@ -1,19 +1,19 @@
 // Package permutation provides implementations of algorithms generating permutations of the input.
 package permutation
 
-// Backtracking generates all permutations of the input array using backtracking.
-func Backtracking[T any](arr []T) [][]T {
+// Backtracking generates all permutations of the input slice using backtracking.
+func Backtracking[T any](x []T) [][]T {
 	var perms [][]T
-	permTemp := make([]T, len(arr))
+	permTemp := make([]T, len(x))
 
-	backtrack(arr, permTemp, -1, &perms)
+	backtrack(x, permTemp, -1, &perms)
 
 	return perms
 }
 
-func backtrack[T any](arr []T, perm []T, k int, res *[][]T) {
+func backtrack[T any](x []T, perm []T, k int, res *[][]T) {
 	// if is a solution
-	if k == len(arr)-1 {
+	if k == len(x)-1 {
 		// process solution
 		*res = append(*res, append([]T(nil), perm...))
 
@@ -23,14 +23,14 @@ func backtrack[T any](arr []T, perm []T, k int, res *[][]T) {
 	k++
 
 	// generate candidates and recurse
-	for i := k; i < len(arr); i++ {
-		arr[k], arr[i] = arr[i], arr[k]
+	for i := k; i < len(x); i++ {
+		x[k], x[i] = x[i], x[k]
 
-		perm[k] = arr[k]
+		perm[k] = x[k]
 
-		backtrack(arr, perm, k, res)
+		backtrack(x, perm, k, res)
 
 		// to return to init state
-		arr[k], arr[i] = arr[i], arr[k]
+		x[k], x[i] = x[i], x[k]
 	}
 }

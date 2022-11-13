@@ -8,7 +8,7 @@ import (
 func TestNext(t *testing.T) {
 	tests := []struct {
 		name string
-		arr  []int
+		x    []int
 		want bool
 	}{
 		{"exists", []int{1, 2, 3}, true},
@@ -21,7 +21,7 @@ func TestNext(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Next(tt.arr, cmpInt); got != tt.want {
+			if got := Next(tt.x, cmpInt); got != tt.want {
 				t.Errorf("Next() = %v, want %v", got, tt.want)
 			}
 		})

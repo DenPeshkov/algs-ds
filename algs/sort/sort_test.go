@@ -33,7 +33,7 @@ func TestInsertion(t *testing.T) {
 		sort.Insertion(arr, cmp)
 	}
 
-	testEmpty(sortingFunc, t)
+	testEmpty(sortingFunc)
 	testData(sortingFunc, t)
 	testRandom(1_000, sortingFunc, t)
 	testReverseSort(sortingFunc, t)
@@ -44,13 +44,13 @@ func TestSelection(t *testing.T) {
 		sort.Selection(arr, cmp)
 	}
 
-	testEmpty(sortingFunc, t)
+	testEmpty(sortingFunc)
 	testData(sortingFunc, t)
 	testRandom(1_000, sortingFunc, t)
 	testReverseSort(sortingFunc, t)
 }
 
-func testEmpty(sortingFunc func([]int), t *testing.T) {
+func testEmpty(sortingFunc func([]int)) {
 	empty := make([]int, 0)
 	var nilSlice []int
 
@@ -90,20 +90,20 @@ func testRandom(n int, sortingFunc func([]int), t *testing.T) {
 }
 
 func testReverseSort(sortingFunc func(arr []int), t *testing.T) {
-	var arr, revArr []int
+	var data, revData []int
 
-	copy(arr, ints[:])
-	copy(revArr, ints[:])
-	reverse(revArr)
+	copy(data, ints[:])
+	copy(revData, ints[:])
+	reverse(revData)
 
-	sortingFunc(arr)
-	sortingFunc(revArr)
+	sortingFunc(data)
+	sortingFunc(revData)
 
-	for i := 0; i < len(arr); i++ {
-		if arr[i] != revArr[len(arr)-1-i] {
+	for i := 0; i < len(data); i++ {
+		if data[i] != revData[len(data)-1-i] {
 			t.Errorf("reverse sort didn't sort")
 		}
-		if i > len(arr)/2 {
+		if i > len(data)/2 {
 			break
 		}
 	}

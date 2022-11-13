@@ -5,19 +5,19 @@ import (
 )
 
 /*
-Next permutes the input array into next permutation in lexicographic order.
+Next permutes the input slice into the next permutation in lexicographic order.
 If such permutation doesn't exist the input is unchanged.
 Returns true if next permutation exists, false otherwise.
 */
-func Next[T any](arr []T, cmp utils.Comparator[T]) bool {
-	N := len(arr)
+func Next[T any](x []T, cmp utils.Comparator[T]) bool {
+	N := len(x)
 
 	var k, l int
 	notLast := false
 
-	// largest k such that arr[k]<arr[k+1]a
+	// largest k such that x[k]<x[k+1]a
 	for k = N - 2; k >= 0; k-- {
-		if cmp(arr[k], arr[k+1]) < 0 {
+		if cmp(x[k], x[k+1]) < 0 {
 			break
 		}
 	}
@@ -26,23 +26,23 @@ func Next[T any](arr []T, cmp utils.Comparator[T]) bool {
 	if k >= 0 {
 		notLast = true
 
-		// largest l>k such that arr[k]<arr[l]
+		// largest l>k such that x[k]<x[l]
 		for l = N - 1; l > k; l-- {
-			if cmp(arr[k], arr[l]) < 0 {
+			if cmp(x[k], x[l]) < 0 {
 				break
 			}
 		}
 
-		arr[k], arr[l] = arr[l], arr[k]
+		x[k], x[l] = x[l], x[k]
 	}
 
-	reverse(arr[k+1:])
+	reverse(x[k+1:])
 
 	return notLast
 }
 
-func reverse[T any](arr []T) {
-	for i, j := 0, len(arr)-1; i < j; i, j = i+1, j-1 {
-		arr[i], arr[j] = arr[j], arr[i]
+func reverse[T any](x []T) {
+	for i, j := 0, len(x)-1; i < j; i, j = i+1, j-1 {
+		x[i], x[j] = x[j], x[i]
 	}
 }
