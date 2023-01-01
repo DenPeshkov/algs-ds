@@ -34,9 +34,9 @@ func Next[T any](x []T, cmp utils.Comparator[T]) bool {
 		}
 
 		x[k], x[l] = x[l], x[k]
-	}
 
-	reverse(x[k+1:])
+		reverse(x[k+1:])
+	}
 
 	return notLast
 }

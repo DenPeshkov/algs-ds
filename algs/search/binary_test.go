@@ -6,6 +6,8 @@ import (
 	"fmt"
 	. "github.com/DenPeshkov/algs-ds/algs/search"
 	"github.com/DenPeshkov/algs-ds/utils"
+	"golang.org/x/exp/constraints"
+	"sort"
 	"testing"
 )
 
@@ -21,51 +23,53 @@ func genArr(n int) []int {
 	return x
 }
 
-func TestBinary(t *testing.T) {
-	cmp := func(a, b int) int {
-		switch {
-		case a == b:
-			return 0
-		case a < b:
-			return -1
-		default:
-			return 1
-		}
+func cmp[T constraints.Ordered](a, b T) int {
+	switch {
+	case a == b:
+		return 0
+	case a < b:
+		return -1
+	default:
+		return 1
 	}
+}
 
+func TestBinary(t *testing.T) {
 	tests := []struct {
-		name   string
 		x      []int
 		target int
 		i      int
 	}{
-		{"empty 0 0", genArr(0), 0, 0},
-		{"1 0 0", genArr(1), 0, 0},
-		{"1 -1 0", genArr(1), 1, 0},
-		{"1 1 0", genArr(1), -1, 0},
-		{"2 0 0", genArr(2), 0, 0},
-		{"2 1 1", genArr(2), 1, 1},
-		{"2 -1 0", genArr(2), -1, 0},
-		{"2 2 1", genArr(2), 2, 1},
-		{"100 0", genArr(100), 0, 0},
-		{"100 99", genArr(100), 99, 99},
-		{"100 49", genArr(100), 49, 49},
-		{"100 50", genArr(100), 50, 50},
-		{"100 51", genArr(100), 51, 51},
+		{genArr(0), 0, 0},
+		{genArr(1), 0, 0},
+		{genArr(1), 1, 1},
+		{genArr(1), -1, 0},
+		{genArr(2), 0, 0},
+		{genArr(2), 1, 1},
+		{genArr(2), -1, 0},
+		{genArr(2), 2, 2},
+		{genArr(100), 0, 0},
+		{genArr(100), 99, 99},
+		{genArr(100), 49, 49},
+		{genArr(100), 50, 50},
+		{genArr(100), 51, 51},
+		{genArr(100), 100, 100},
+		{genArr(100), 150, 100},
+		{genArr(100), -150, 0},
 	}
 
 	for _, e := range tests {
-		i := Binary(e.x, e.target, cmp)
+		i := Binary(e.x, e.target, cmp[int])
 
 		if i != e.i {
-			t.Errorf("%s: expected index %d; got %d", e.name, e.i, i)
+			t.Errorf("expected index %d; got %d", e.i, i)
 		}
 	}
 
 	for e, v := range data {
-		name := fmt.Sprintf("data%v", e)
+		name := fmt.Sprintf("data %v", e)
 
-		i := Binary(data, v, cmp)
+		i := Binary(data, v, cmp[int])
 
 		if data[i] != v {
 			t.Errorf("%s: expected to find %d; found %d", name, v, data[i])
@@ -81,39 +85,66 @@ func TestBinaryPredicate(t *testing.T) {
 	}
 
 	tests := []struct {
-		name string
-		x    []int
-		f    utils.Predicate[int]
-		i    int
+		x []int
+		f utils.Predicate[int]
+		i int
 	}{
-		{"empty", genArr(0), nil, 0},
-		{"1 1", genArr(1), p(1), 1},
-		{"1 true", genArr(1), func(i int) bool { return true }, 0},
-		{"1 false", genArr(1), func(i int) bool { return false }, 1},
-		{"100 91", genArr(100), p(91), 91},
-		{"all true 0", genArr(100), func(i int) bool { return true }, 0},
-		{"all false 100 (n)", genArr(100), func(i int) bool { return false }, 100},
-		{"data -20", data, p(-20), 0},
-		{"data -10", data, p(-10), 0},
-		{"data -9", data, p(-9), 1},
-		{"data -6", data, p(-6), 1},
-		{"data -5", data, p(-5), 1},
-		{"data 3", data, p(3), 5},
-		{"data 11", data, p(11), 8},
-		{"data 99", data, p(99), 9},
-		{"data 100", data, p(100), 9},
-		{"data 101", data, p(101), 12},
-		{"data 10000", data, p(10000), 13},
-		{"data 10001", data, p(10001), 14},
-		{"descending a", genArr(7), func(i int) bool { return []int{99, 99, 59, 42, 7, 0, -1, -1}[i] <= 7 }, 4},
-		{"descending 7", genArr(100), func(i int) bool { return 100-i <= 7 }, 100 - 7},
+		{genArr(0), nil, 0},
+		{genArr(1), p(1), 1},
+		{genArr(1), func(i int) bool { return true }, 0},
+		{genArr(1), func(i int) bool { return false }, 1},
+		{genArr(100), p(91), 91},
+		{genArr(100), func(i int) bool { return true }, 0},
+		{genArr(100), func(i int) bool { return false }, 100},
+		{data, p(-20), 0},
+		{data, p(-10), 0},
+		{data, p(-9), 1},
+		{data, p(-6), 1},
+		{data, p(-5), 1},
+		{data, p(3), 5},
+		{data, p(11), 8},
+		{data, p(99), 9},
+		{data, p(100), 9},
+		{data, p(101), 12},
+		{data, p(10000), 13},
+		{data, p(10001), 14},
+		{genArr(7), func(i int) bool { return []int{99, 99, 59, 42, 7, 0, -1, -1}[i] <= 7 }, 4},
+		{genArr(100), func(i int) bool { return 100-i <= 7 }, 100 - 7},
 	}
 
 	for _, e := range tests {
 		i := BinaryPredicate(e.x, e.f)
 
 		if i != e.i {
-			t.Errorf("%s: expected index %d; got %d", e.name, e.i, i)
+			t.Errorf("expected index %d; got %d", e.i, i)
 		}
 	}
+}
+
+func FuzzBinary(f *testing.F) {
+	f.Fuzz(func(t *testing.T, s string, target rune) {
+		r := []rune(s)
+		l := len(r)
+
+		isValid := func(i int) bool {
+			switch {
+			case l == 0:
+				return i == 0 // empty x
+			case i == l: // target is max
+				return target > r[l-1]
+			case i == 0: // target is min
+				return target == r[0] || target < r[0]
+			default:
+				return target == r[i] || (target > r[i-1] && target < r[i])
+			}
+		}
+
+		sort.Slice(r, func(i, j int) bool { return r[i] < r[j] })
+
+		i := Binary(r, target, cmp[rune])
+
+		if !isValid(i) {
+			t.Errorf("expected index to insert target to be: %d; got: %d", l, i)
+		}
+	})
 }

@@ -4,6 +4,7 @@ package sort_test
 
 import (
 	"github.com/DenPeshkov/algs-ds/algs/sort"
+	"golang.org/x/exp/constraints"
 	"math/rand"
 	gosort "sort"
 	"testing"
@@ -11,7 +12,7 @@ import (
 
 var ints = [...]int{74, 59, 238, -784, 9845, 959, 905, 0, 0, 42, 7586, -5467984, 7586}
 
-var cmp = func(a, b int) int {
+func cmp[T constraints.Ordered](a, b T) int {
 	switch {
 	case a == b:
 		return 0
@@ -22,15 +23,15 @@ var cmp = func(a, b int) int {
 	}
 }
 
-func reverse(arr []int) {
-	for lo, hi := 0, len(arr)-1; lo < hi; lo, hi = lo+1, hi-1 {
-		arr[lo], arr[hi] = arr[hi], arr[lo]
+func reverse(x []int) {
+	for lo, hi := 0, len(x)-1; lo < hi; lo, hi = lo+1, hi-1 {
+		x[lo], x[hi] = x[hi], x[lo]
 	}
 }
 
 func TestInsertion(t *testing.T) {
-	sortingFunc := func(arr []int) {
-		sort.Insertion(arr, cmp)
+	sortingFunc := func(x []int) {
+		sort.Insertion(x, cmp[int])
 	}
 
 	testEmpty(sortingFunc)
@@ -40,14 +41,30 @@ func TestInsertion(t *testing.T) {
 }
 
 func TestSelection(t *testing.T) {
-	sortingFunc := func(arr []int) {
-		sort.Selection(arr, cmp)
+	sortingFunc := func(x []int) {
+		sort.Selection(x, cmp[int])
 	}
 
 	testEmpty(sortingFunc)
 	testData(sortingFunc, t)
 	testRandom(1_000, sortingFunc, t)
 	testReverseSort(sortingFunc, t)
+}
+
+func FuzzInsertion(f *testing.F) {
+	sortingFunc := func(r []rune) {
+		sort.Insertion(r, cmp[rune])
+	}
+
+	fuzzSort(sortingFunc, f)
+}
+
+func FuzzSelection(f *testing.F) {
+	sortingFunc := func(r []rune) {
+		sort.Selection(r, cmp[rune])
+	}
+
+	fuzzSort(sortingFunc, f)
 }
 
 func testEmpty(sortingFunc func([]int)) {
@@ -107,4 +124,16 @@ func testReverseSort(sortingFunc func(arr []int), t *testing.T) {
 			break
 		}
 	}
+}
+
+func fuzzSort(sortingFunc func(r []rune), f *testing.F) {
+	f.Fuzz(func(t *testing.T, s string) {
+		r := []rune(s)
+
+		sortingFunc(r)
+
+		if !gosort.SliceIsSorted(r, func(i, j int) bool { return r[i] < r[j] }) {
+			t.Errorf("slice was not sorted")
+		}
+	})
 }

@@ -2,6 +2,7 @@ package partition_test
 
 import (
 	. "github.com/DenPeshkov/algs-ds/algs/partition"
+	"golang.org/x/exp/constraints"
 	"testing"
 )
 
@@ -21,8 +22,8 @@ func reverse(x []int) []int {
 	return rev
 }
 
-func cmp(a int) func(int) int {
-	return func(e int) int {
+func cmp[T constraints.Ordered](a T) func(T) int {
+	return func(e T) int {
 		switch {
 		case e == a:
 			return 0
@@ -91,4 +92,46 @@ func testX(x []int, t *testing.T) {
 			t.Errorf("expected [%v, %v], got [%v, %v]", test.lt, test.gt, lt, gt)
 		}
 	}
+}
+
+func FuzzThreeWay(f *testing.F) {
+	testcases := []struct {
+		s string
+		r rune
+	}{
+		{"", 'a'},
+		{"a", 'a'},
+		{"a", 'b'},
+		{"aa", 'a'},
+		{"aa", 'b'},
+		{"ab", 'a'},
+		{"ab", 'b'},
+	}
+
+	for _, tc := range testcases {
+		f.Add(tc.s, tc.r)
+	}
+
+	f.Fuzz(func(t *testing.T, s string, e rune) {
+		x := []rune(s)
+		f := cmp(e)
+
+		lt, gt := ThreeWay(x, f)
+
+		for i := 0; i <= lt-1; i++ {
+			if !(f(x[i]) < 0) {
+				t.Errorf("expected f[e]<0 for x [0, lt-1]; got: f(x[%v])=%v", i, f(x[i]))
+			}
+		}
+		for i := lt; i <= gt; i++ {
+			if !(f(x[i]) == 0) {
+				t.Errorf("expected f[e]==0 for x [lt, gt]; got: f(x[%v])=%v", i, f(x[i]))
+			}
+		}
+		for i := gt + 1; i <= len(x)-1; i++ {
+			if !(f(x[i]) > 0) {
+				t.Errorf("expected f[e]==0 for x [gt+1, len(x)-1]; got: f(x[%v])=%v", i, f(x[i]))
+			}
+		}
+	})
 }

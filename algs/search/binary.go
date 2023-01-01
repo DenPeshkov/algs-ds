@@ -8,14 +8,14 @@ import (
 /*
 Binary implements binary search.
 It returns the index of the target in the slice if it is present.
-If target is not present it returns the index to insert target.
+If target is not present it returns the index to insert target. The returned index is in interval: [0, len(x)]
 If the slice contains multiple elements with the specified value, there is no guarantee which one will be found.
 The slice must be sorted in ascending order, defined by cmp.
 */
 func Binary[T any](x []T, target T, cmp utils.Comparator[T]) int {
 	lo, hi := 0, len(x)-1
 
-	for lo < hi {
+	for lo <= hi {
 		m := int(uint(lo+hi) >> 1)
 		v := x[m]
 
